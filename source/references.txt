@@ -1,0 +1,32 @@
+Word boundry detection:
+http://www.paulgraham.com/better.html
+``A Plan for Spam'' uses a very simple definition of a token. Letters, digits, dashes, apostrophes, and dollar signs are constituent characters, and everything else is a token separator. I also ignored case.
+
+Now I have a more complicated definition of a token:
+
+
+Case is preserved.
+
+
+Exclamation points are constituent characters.
+
+
+Periods and commas are constituents if they occur between two digits. This lets me get ip addresses and prices intact.
+
+
+A price range like $20-25 yields two tokens, $20 and $25.
+
+
+Tokens that occur within the To, From, Subject, and Return-Path lines, or within urls, get marked accordingly. E.g. ``foo'' in the Subject line becomes ``Subject*foo''. (The asterisk could be any character you don't allow as a constituent.) 
+Such measures increase the filter's vocabulary, which makes it more discriminating. For example, in the current filter, ``free'' in the Subject line has a spam probability of 98%, whereas the same token in the body has a spam probability of only 65%.
+
+
+http://oss.software.ibm.com/icu/docs/papers/text_boundary_analysis_in_java/
+
+
+(?: \$?[\d\.\,]*\d (?! (?: [\-\@][a-zA-Z0-9]+)+) )  # Select deimal numbers with option dollar sign if they are not followed by dash or alphas
+ |   # selects the group above or below - whichever is the biggest
+(?: [a-z0-9A-Z\'\$_][a-z0-9A-Z\'\-\$_]*)      #
+This regular expression intelligently breaks down text in to more real-life word tokens as defined by Paul Grahams article in Plan for Spam http://www.paulgraham.com/better.html. This is basically also known as word boundry detection algorithm and can be used wherever you want to break down the text in to real-life words. It will consider "3.141" or "$5,000.20" or "1-800-Flowers" as one word but "Hi.How are you?" or "red,green" or "$11-$23" as multiple words. Try following example text and see how it tokenizes in to words.
+
+I've $35 and it' nice to have! Do you have more "green ones" i.e. $5-$30? Don't make me call 1-800-HELP. Is it good4u? I know you want $5,000.45.Does $1-$5 in red,blue sounds good? You should first know that value of pi=3.141. And then... You_Rule!
